@@ -1,12 +1,14 @@
 import { Box, Grid, GridItem, Image, Text, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import Loader from '../Components/Loader';
 import config from '../config';
-import { useAction } from '../hooks';
+import { useAction, useData } from '../hooks';
 
 const Posts = () => {
     const [data, setData] = useState([]);
     const { dispatch, loadingOn, loadingOff, logout } = useAction();
+    const { loading } = useData();
     const toast = useToast()
 
     useEffect(() => {
@@ -26,6 +28,7 @@ const Posts = () => {
                 setData(res.data.posts);
                 console.log(res.data.posts);
             }
+            dispatch(loadingOff());
         } catch (err) {
             dispatch(loadingOff());
             dispatch(logout());
@@ -40,6 +43,7 @@ const Posts = () => {
     }
     return (
         <Box my={5}>
+            {loading && <Loader />}
             <Grid templateColumns='repeat(3, 1fr)' gap={6}>
                 {data?.map((post) => {
                     return (

@@ -2,8 +2,9 @@ import { Box, Button, Input, Text, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Loader } from '../Components';
 import config from '../config';
-import { useAction } from '../hooks';
+import { useAction, useData } from '../hooks';
 
 const Login = () => {
     const [details, setDetails] = useState({
@@ -11,6 +12,7 @@ const Login = () => {
         password: ''
     })
     const { login, dispatch, loadingOn, loadingOff } = useAction();
+    const { loading } = useData();
     const navigate = useNavigate();
     const toast = useToast()
 
@@ -51,6 +53,7 @@ const Login = () => {
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" h="80vh">
+            {loading && <Loader />}
             <Box w={["95%", "90%", "70%", "50%"]} boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" p="70px 50px"
                 borderRadius="lg" display="flex" flexDir="column" gap="20px"
             >
