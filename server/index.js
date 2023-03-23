@@ -2,6 +2,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from "express";
 import connectDb from './Config/db.js';
+import postsRouter from './Routes/postRouter.js';
 import userRouter from './Routes/userRouter.js';
 dotenv.config();
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/user', userRouter);
+app.use('/api/posts', postsRouter);
 
 const startServer = () => {
     app.listen(process.env.PORT, async () => {
