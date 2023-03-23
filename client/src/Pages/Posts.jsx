@@ -6,7 +6,7 @@ import { useAction } from '../hooks';
 
 const Posts = () => {
     const [data, setData] = useState([]);
-    const { dispatch, loadingOn, loadingOff } = useAction();
+    const { dispatch, loadingOn, loadingOff, logout } = useAction();
     const toast = useToast()
 
     useEffect(() => {
@@ -16,13 +16,19 @@ const Posts = () => {
     const fetchPosts = async () => {
         try {
             dispatch(loadingOn());
-            let res = await axios.get(`${config.API_URL}api/posts`);
+            const token = localStorage.getItem('token') || 'token';
+            let res = await axios.get(`${config.API_URL}api/posts`, {
+                headers: {
+                    'authorization': `Bearer ${token}`
+                }
+            });
             if (res?.data?.status) {
                 setData(res.data.posts);
                 console.log(res.data.posts);
             }
         } catch (err) {
             dispatch(loadingOff());
+            dispatch(logout());
             toast({
                 title: err?.response?.data?.message,
                 status: 'error',
@@ -37,7 +43,7 @@ const Posts = () => {
             <Grid templateColumns='repeat(3, 1fr)' gap={6}>
                 {data?.map((post) => {
                     return (
-                        <GridItem key={post.id} boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" p={4}
+                        <GridItem key={post._id} boxShadow="rgba(0, 0, 0, 0.35) 0px 5px 15px" p={4}
                             borderRadius={10}
                         >
                             <Box h='200px' bg='blue.500'>
