@@ -1,11 +1,9 @@
-export const login = (token, name) => (dispatch, getState) => {
+export const login = (token) => (dispatch, getState) => {
     localStorage.setItem('token', token);
-    localStorage.setItem('name', name);
     return dispatch({
         type: 'LOGIN',
         payload: {
-            token,
-            name
+            token
         }
     })
 }

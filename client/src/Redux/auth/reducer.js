@@ -1,13 +1,11 @@
 const token = localStorage.getItem('token') || '';
-const name = localStorage.getItem('name') || 'User';
 const isAuth = (token) ? true : false;
 
 
 const defaultData = {
     isAuth,
     token,
-    loading: false,
-    name
+    loading: false
 }
 
 const authReducer = (state = defaultData, action) => {
@@ -17,15 +15,13 @@ const authReducer = (state = defaultData, action) => {
                 ...state,
                 token: action.payload.token,
                 isAuth: true,
-                loading: false,
-                name: action.payload.name
+                loading: false
             }
         case 'LOGOUT':
             return {
                 ...state,
                 isAuth: false,
-                token: '',
-                name: 'User'
+                token: ''
             }
         case 'LOADING_ON':
             return {

@@ -3,6 +3,7 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import config from '../config';
+import { useAction } from '../hooks';
 
 const Signup = () => {
     const [details, setDetails] = useState({
@@ -10,7 +11,8 @@ const Signup = () => {
         email: '',
         password: ''
     })
-    const toast = useToast();
+    const toast = useToast()
+    const { login, dispatch, loadingOn, loadingOff } = useAction();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -23,12 +25,12 @@ const Signup = () => {
     const signupUser = async (e) => {
         e.preventDefault();
         try {
+            dispatch(loadingOn());
             let res = await axios.post(`${config.API_URL}api/user/signup`, { ...details });
             console.log(res?.data?.message);
             if (res?.data?.status) {
                 const token = res?.data?.token;
-                console.log(token);
-                localStorage.setItem('token', token);
+                dispatch(login(token));
                 toast({
                     title: res.data.message,
                     status: 'success',
@@ -38,6 +40,7 @@ const Signup = () => {
                 navigate('/');
             }
         } catch (err) {
+            dispatch(loadingOff());
             toast({
                 title: err?.response?.data?.message,
                 status: 'error',
