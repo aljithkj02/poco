@@ -1,5 +1,8 @@
+import Confirm from "./Confirm"
 import Navbar from "./Navbar"
 
 export {
-    Navbar
+    Navbar,
+    Confirm
 }
+
