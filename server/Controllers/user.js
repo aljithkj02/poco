@@ -2,8 +2,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../Models/user.js';
 
-const generateToken = (user) => {
-    const token = jwt.sign(user, process.env.JWT_CLIENT_SECRET);
+const generateAccessToken = (user) => {
+    const token = jwt.sign(user, process.env.JWT_CLIENT_SECRET, { expiresIn: "1m" });
+    return token;
+}
+const generateRefreshToken = (user) => {
+    const token = jwt.sign(user, process.env.JWT_CLIENT_SECRET, { expiresIn: "3m" });
     return token;
 }
 
@@ -42,10 +46,12 @@ export const signupHandler = async (req, res) => {
             _id: user._id,
             email: user._email
         }
-        const token = generateToken(userObj);
+        const token = generateAccessToken(userObj);
+        const refreshToken = generateRefreshToken(userObj);
         res.status(200).json({
             status: true,
             token,
+            refreshToken,
             message: 'Successfuly signedup'
         })
     } catch (err) {
@@ -77,11 +83,57 @@ export const loginHandler = async (req, res) => {
             _id: existingUser._id,
             email: existingUser.email
         }
-        const token = generateToken(userObj);
+        const token = generateAccessToken(userObj);
+        const refreshToken = generateRefreshToken(userObj);
         res.status(200).json({
             status: true,
             token,
+            refreshToken,
             message: 'Successfuly loggedin!'
+        })
+    } catch (err) {
+        res.status(500).json({
+            status: false,
+            message: err.message
+        })
+    }
+}
+
+export const refreshTokenHandler = async (req, res) => {
+    try {
+        const authorization = req.headers.authorization;
+        const refreshToken = authorization && authorization.split(' ').pop();
+        if (!refreshToken) {
+            return res.status(401).json({
+                status: false,
+                message: 'No refresh token provided'
+            })
+        }
+        jwt.verify(refreshToken, process.env.JWT_CLIENT_SECRET, (err, data) => {
+            if (err) return res.status(401).json({
+                statue: false,
+                message: err.message
+            })
+            const user = User.findOne({ _id: data._id });
+            if (!user) {
+                return res.status(401).json({
+                    status: false,
+                    message: 'Invalid refresh token'
+                })
+            }
+
+            const userObj = {
+                _id: user._id,
+                email: user.email
+            }
+
+            const token = generateAccessToken(userObj);
+            res.status(200).json({
+                status: true,
+                token,
+                message: 'Successfuly generated new token!'
+            })
+
         })
     } catch (err) {
         res.status(500).json({

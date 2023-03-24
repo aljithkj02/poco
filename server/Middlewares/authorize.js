@@ -8,7 +8,7 @@ const authorize = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({
                 status: false,
-                message: 'Invalid authorization'
+                message: 'No token provided'
             })
         }
         jwt.verify(token, process.env.JWT_CLIENT_SECRET, (err, data) => {
