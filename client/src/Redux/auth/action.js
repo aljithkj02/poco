@@ -1,5 +1,4 @@
 export const login = (token, refreshToken) => (dispatch, getState) => {
-    console.log(refreshToken);
     localStorage.setItem('token', token);
     localStorage.setItem('refreshToken', refreshToken);
     return dispatch({

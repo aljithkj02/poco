@@ -36,13 +36,17 @@ const Posts = () => {
                 let res = await sendRefreshToken();
                 if (res.status) {
                     const refreshToken = localStorage.getItem('refreshToken');
-                    console.log(res.token);
                     dispatch(login(res.token, refreshToken));
                     fetchPosts();
                 } else {
-                    console.log('logout')
                     dispatch(loadingOff());
                     dispatch(logout());
+                    toast({
+                        title: 'Token expired, login again!',
+                        status: 'warning',
+                        position: 'top',
+                        isClosable: true,
+                    })
                 }
             } else {
                 toast({
