@@ -1,5 +1,7 @@
-export const login = (token) => (dispatch, getState) => {
+export const login = (token, refreshToken) => (dispatch, getState) => {
+    console.log(refreshToken);
     localStorage.setItem('token', token);
+    localStorage.setItem('refreshToken', refreshToken);
     return dispatch({
         type: 'LOGIN',
         payload: {
@@ -10,7 +12,7 @@ export const login = (token) => (dispatch, getState) => {
 
 export const logout = () => (dispatch, getState) => {
     localStorage.removeItem('token');
-    localStorage.removeItem('name');
+    localStorage.removeItem('refreshToken');
     return dispatch({
         type: 'LOGOUT'
     })

@@ -30,7 +30,8 @@ const Login = () => {
             let res = await axios.post(`${config.API_URL}api/user/login`, { ...details });
             if (res?.data?.status) {
                 const token = res?.data?.token;
-                dispatch(login(token));
+                const refreshToken = res?.data?.refreshToken;
+                dispatch(login(token, refreshToken));
                 toast({
                     title: res?.data?.message,
                     status: 'success',

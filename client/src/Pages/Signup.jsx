@@ -32,7 +32,8 @@ const Signup = () => {
             console.log(res?.data?.message);
             if (res?.data?.status) {
                 const token = res?.data?.token;
-                dispatch(login(token));
+                const refreshToken = res?.data?.refreshToken;
+                dispatch(login(token, refreshToken));
                 toast({
                     title: res.data.message,
                     status: 'success',

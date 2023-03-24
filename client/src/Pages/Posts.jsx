@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Loader from '../Components/Loader';
 import config from '../config';
 import { useAction, useData } from '../hooks';
+import { login } from '../redux/auth/action';
+import { sendRefreshToken } from '../utils';
 
 const Posts = () => {
     const [data, setData] = useState([]);
@@ -30,15 +32,28 @@ const Posts = () => {
             }
             dispatch(loadingOff());
         } catch (err) {
-            dispatch(loadingOff());
-            dispatch(logout());
-            toast({
-                title: err?.response?.data?.message,
-                status: 'error',
-                position: 'top',
-                isClosable: true,
-            })
-            console.log(err?.response?.data?.message);
+            if (err?.response?.data?.message === 'jwt expired') {
+                let res = await sendRefreshToken();
+                if (res.status) {
+                    const refreshToken = localStorage.getItem('refreshToken');
+                    console.log(res.token);
+                    dispatch(login(res.token, refreshToken));
+                    fetchPosts();
+                } else {
+                    console.log('logout')
+                    dispatch(loadingOff());
+                    dispatch(logout());
+                }
+            } else {
+                toast({
+                    title: err?.response?.data?.message,
+                    status: 'error',
+                    position: 'top',
+                    isClosable: true,
+                })
+                dispatch(loadingOff());
+                dispatch(logout());
+            }
         }
     }
     return (
